@@ -1,0 +1,5 @@
+/*
+!wp-content
+!.gitignore
+wp-content/uploads/*
+wp-content/plugins/fakerpress

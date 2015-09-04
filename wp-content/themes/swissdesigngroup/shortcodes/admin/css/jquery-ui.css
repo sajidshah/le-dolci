@@ -1,0 +1,137 @@
+/* Component containers
+----------------------------------*/
+.hb-jquery-ui ut_jquery_ui.ui-widget {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 1.2em;
+}
+.hb-jquery-ui .ui-widget .ui-widget {
+	font-size: 1em;
+}
+.hb-jquery-ui .ui-widget input,
+.hb-jquery-ui .ui-widget select,
+.hb-jquery-ui .ui-widget textarea,
+.hb-jquery-ui .ui-widget button {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 1em;
+}
+.hb-jquery-ui .ui-widget-content {
+	border: 1px solid #aaaaaa;
+	background: #ffffff;
+	color: #222222;
+}
+.hb-jquery-ui .ui-widget-content a {
+	color: #222222;
+}
+.hb-jquery-ui .ui-widget-header {
+	border: 1px solid #aaaaaa;
+	background: #cccccc;
+	color: #222222;
+	font-weight: bold;
+}
+.hb-jquery-ui .ui-widget-header a {
+	color: #222222;
+}
+/* Interaction states
+----------------------------------*/
+.hb-jquery-ui .ui-state-default,
+.hb-jquery-ui .ui-widget-content .ui-state-default,
+.hb-jquery-ui .ui-widget-header .ui-state-default {
+	background: #22DAA2;
+	font-weight: normal;
+	color: #555555;
+}
+.hb-jquery-ui .ui-state-default a,
+.hb-jquery-ui .ui-state-default a:link,
+.hb-jquery-ui .ui-state-default a:visited {
+	color: #555555;
+	text-decoration: none;
+}
+.hb-jquery-ui .ui-state-hover,
+.hb-jquery-ui .ui-widget-content .ui-state-hover,
+.hb-jquery-ui .ui-widget-header .ui-state-hover,
+.hb-jquery-ui .ui-state-focus,
+.hb-jquery-ui .ui-widget-content .ui-state-focus,
+.hb-jquery-ui .ui-widget-header .ui-state-focus {
+	background: #dadada;
+	font-weight: normal;
+	color: #212121;
+}
+.hb-jquery-ui .ui-state-hover a,
+.hb-jquery-ui .ui-state-hover a:hover {
+	color: #212121;
+	text-decoration: none;
+}
+.hb-jquery-ui .ui-state-active,
+.hb-jquery-ui .ui-widget-content .ui-state-active,
+.hb-jquery-ui .ui-widget-header .ui-state-active {
+	background: #333;
+	font-weight: normal;
+	color: #212121;
+}
+.hb-jquery-ui .ui-state-active a,
+.hb-jquery-ui .ui-state-active a:link,
+.hb-jquery-ui .ui-state-active a:visited {
+	color: #212121;
+	text-decoration: none;
+}
+.hb-jquery-ui .ui-widget :active {
+	outline: none;
+}
+/* UI Slider
+----------------------------------*/
+.hb-jquery-ui .ui-slider {
+	position: relative;
+	text-align: left;
+	display: inline-block;
+}
+.hb-jquery-ui .ui-slider .ui-slider-handle {
+	position: absolute;
+	z-index: 2;
+	width: 1.3em;
+	height: 1.3em;
+	cursor: default;
+}
+.hb-jquery-ui .ui-slider .ui-slider-range {
+	position: absolute;
+	z-index: 1;
+	font-size: .7em;
+	display: block;
+	border: 0;
+	background-position: 0 0;
+}
+.hb-jquery-ui .ui-slider-horizontal {
+	height: .8em;
+}
+.hb-jquery-ui .ui-slider-horizontal .ui-slider-handle {
+	top: -.3em;
+	margin-left: -.6em;
+}
+.hb-jquery-ui .ui-slider-horizontal .ui-slider-range {
+	top: 0;
+	height: 100%;
+}
+.hb-jquery-ui .ui-slider-horizontal .ui-slider-range-min {
+	left: 0;
+}
+.hb-jquery-ui .ui-slider-horizontal .ui-slider-range-max {
+	right: 0;
+}
+.hb-jquery-ui .ui-slider-vertical {
+	width: .8em;
+	height: 100px;
+}
+.hb-jquery-ui .ui-slider-vertical .ui-slider-handle {
+	left: -.3em;
+	margin-left: 0;
+	margin-bottom: -.6em;
+}
+.hb-jquery-ui .ui-slider-vertical .ui-slider-range {
+	left: 0;
+	width: 100%;
+}
+.hb-jquery-ui .ui-slider-vertical .ui-slider-range-min {
+	bottom: 0;
+}
+.hb-jquery-ui .ui-slider-vertical .ui-slider-range-max {
+	top: 0;
+}

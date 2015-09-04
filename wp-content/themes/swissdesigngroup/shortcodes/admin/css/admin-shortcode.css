@@ -1,0 +1,827 @@
+@import url(http://fonts.googleapis.com/css?family=Oswald|Montserrat:700|Molengo);
+
+
+/*
+|--------------------------------------------------------------------------
+| Form Styles
+|--------------------------------------------------------------------------
+*/ 
+
+.hb-admin .btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 12px;
+  font-weight: normal !important;
+  line-height: 1.428571429;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+       -o-user-select: none;
+          user-select: none;
+}
+
+.hb-admin .btn:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.hb-admin .btn:hover,
+.hb-admin .btn:focus {
+  color: #333333;
+  text-decoration: none;
+}
+
+.hb-admin.btn:active,
+.hb-admin .btn.active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+          box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.hb-admin .btn-default {
+  color: #333333;
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
+.hb-admin .btn-default:hover,
+.hb-admin .btn-default:focus,
+.hb-admin .btn-default:active,
+.hb-admin .btn-default.active,
+.hb-admin .open .dropdown-toggle.btn-default {
+  color: #333333;
+  background-color: #ebebeb;
+  border-color: #adadad;
+}
+
+.hb-admin .btn-default:active,
+.hb-admin .btn-default.active,
+.hb-admin .open .dropdown-toggle.btn-default {
+  background-image: none;
+}
+
+.hb-admin .btn-default.disabled,
+.hb-admin .btn-default[disabled],
+.hb-admin fieldset[disabled] .btn-default,
+.hb-admin .btn-default.disabled:hover,
+.hb-admin .btn-default[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-default:hover,
+.hb-admin .btn-default.disabled:focus,
+.hb-admin .btn-default[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-default:focus,
+.hb-admin .btn-default.disabled:active,
+.hb-admin .btn-default[disabled]:active,
+.hb-admin fieldset[disabled] .btn-default:active,
+.hb-admin .btn-default.disabled.active,
+.hb-admin .btn-default[disabled].active,
+.hb-admin fieldset[disabled] .btn-default.active {
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
+.hb-admin .btn-primary {
+  color: #333;
+  background-color: #22DAA2;
+  border-color: #22DAA2;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 2px;
+}
+
+.hb-admin .btn-primary:hover,
+.hb-admin .btn-primary:focus,
+.hb-admin .btn-primary:active,
+.hb-admin .btn-primary.active,
+.hb-admin .open .dropdown-toggle.btn-primary {
+  color: #22DAA2 !important;
+  background-color: #333;
+  border-color: #333;
+}
+
+.hb-admin .btn-primary:active,
+.hb-admin .btn-primary.active,
+.hb-admin .open .dropdown-toggle.btn-primary {
+  background-image: none;
+}
+
+.hb-admin .btn-primary.disabled,
+.hb-admin .btn-primary[disabled],
+.hb-admin fieldset[disabled] .btn-primary,
+.hb-admin .btn-primary.disabled:hover,
+.hb-admin .btn-primary[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-primary:hover,
+.hb-admin .btn-primary.disabled:focus,
+.hb-admin .btn-primary[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-primary:focus,
+.hb-admin .btn-primary.disabled:active,
+.hb-admin .btn-primary[disabled]:active,
+.hb-admin fieldset[disabled] .btn-primary:active,
+.hb-admin .btn-primary.disabled.active,
+.hb-admin .btn-primary[disabled].active,
+.hb-admin fieldset[disabled] .btn-primary.active {
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+
+.hb-admin .btn-warning {
+  color: #ffffff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.hb-admin .btn-warning:hover,
+.hb-admin .btn-warning:focus,
+.hb-admin .btn-warning:active,
+.hb-admin .btn-warning.active,
+.hb-admin .open .dropdown-toggle.btn-warning {
+  color: #ffffff;
+  background-color: #ed9c28;
+  border-color: #d58512;
+}
+
+.hb-admin .btn-warning:active,
+.hb-admin .btn-warning.active,
+.hb-admin .open .dropdown-toggle.btn-warning {
+  background-image: none;
+}
+
+.hb-admin .btn-warning.disabled,
+.hb-admin .btn-warning[disabled],
+.hb-admin fieldset[disabled] .btn-warning,
+.hb-admin .btn-warning.disabled:hover,
+.hb-admin .btn-warning[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-warning:hover,
+.hb-admin .btn-warning.disabled:focus,
+.hb-admin .btn-warning[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-warning:focus,
+.hb-admin .btn-warning.disabled:active,
+.hb-admin .btn-warning[disabled]:active,
+.hb-admin fieldset[disabled] .btn-warning:active,
+.hb-admin .btn-warning.disabled.active,
+.hb-admin .btn-warning[disabled].active,
+.hb-admin fieldset[disabled] .btn-warning.active {
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.hb-admin  .btn-danger {
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.hb-admin .btn-danger:hover,
+.hb-admin .btn-danger:focus,
+.hb-admin .btn-danger:active,
+.hb-admin .btn-danger.active,
+.hb-admin .open .dropdown-toggle.btn-danger {
+  color: #ffffff;
+  background-color: #d2322d;
+  border-color: #ac2925;
+}
+
+.hb-admin .btn-danger:active,
+.hb-admin .btn-danger.active,
+.hb-admin .open .dropdown-toggle.btn-danger {
+  background-image: none;
+}
+
+.hb-admin .btn-danger.disabled,
+.hb-admin .btn-danger[disabled],
+.hb-admin fieldset[disabled] .btn-danger,
+.hb-admin .btn-danger.disabled:hover,
+.hb-admin .btn-danger[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-danger:hover,
+.hb-admin .btn-danger.disabled:focus,
+.hb-admin .btn-danger[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-danger:focus,
+.hb-admin .btn-danger.disabled:active,
+.hb-admin .btn-danger[disabled]:active,
+.hb-admin fieldset[disabled] .btn-danger:active,
+.hb-admin .btn-danger.disabled.active,
+.hb-admin .btn-danger[disabled].active,
+.hb-admin fieldset[disabled] .btn-danger.active {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.hb-admin .btn-success {
+  color: #ffffff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.hb-admin .btn-success:hover,
+.hb-admin .btn-success:focus,
+.hb-admin .btn-success:active,
+.hb-admin .btn-success.active,
+.hb-admin .open .dropdown-toggle.btn-success {
+  color: #ffffff;
+  background-color: #47a447;
+  border-color: #398439;
+}
+
+.hb-admin .btn-success:active,
+.hb-admin .btn-success.active,
+.hb-admin .open .dropdown-toggle.btn-success {
+  background-image: none;
+}
+
+.hb-admin .btn-success.disabled,
+.hb-admin .btn-success[disabled],
+.hb-admin fieldset[disabled] .btn-success,
+.hb-admin .btn-success.disabled:hover,
+.hb-admin .btn-success[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-success:hover,
+.hb-admin .btn-success.disabled:focus,
+.hb-admin .btn-success[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-success:focus,
+.hb-admin .btn-success.disabled:active,
+.hb-admin .btn-success[disabled]:active,
+.hb-admin fieldset[disabled] .btn-success:active,
+.hb-admin .btn-success.disabled.active,
+.hb-admin .btn-success[disabled].active,
+.hb-admin fieldset[disabled] .btn-success.active {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.hb-admin .btn-info {
+  color: #ffffff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.hb-admin .btn-info:hover,
+.hb-admin .btn-info:focus,
+.hb-admin .btn-info:active,
+.hb-admin .btn-info.active,
+.hb-admin .open .dropdown-toggle.btn-info {
+  color: #ffffff;
+  background-color: #39b3d7;
+  border-color: #269abc;
+
+}
+
+.hb-admin .btn-info:active,
+.hb-admin .btn-info.active,
+.hb-admin .open .dropdown-toggle.btn-info {
+  background-image: none;
+}
+
+.hb-admin .btn-info.disabled,
+.hb-admin .btn-info[disabled],
+.hb-admin fieldset[disabled] .btn-info,
+.hb-admin .btn-info.disabled:hover,
+.hb-admin .btn-info[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-info:hover,
+.hb-admin .btn-info.disabled:focus,
+.hb-admin .btn-info[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-info:focus,
+.hb-admin .btn-info.disabled:active,
+.hb-admin .btn-info[disabled]:active,
+.hb-admin fieldset[disabled] .btn-info:active,
+.hb-admin .btn-info.disabled.active,
+.hb-admin .btn-info[disabled].active,
+.hb-admin fieldset[disabled] .btn-info.active {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.hb-admin .btn-link {
+  font-weight: normal;
+  color: #428bca;
+  cursor: pointer;
+}
+
+.hb-admin .btn-link,
+.hb-admin .btn-link:active,
+.hb-admin .btn-link[disabled],
+.hb-admin fieldset[disabled] .btn-link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.hb-admin .btn-link,
+.hb-admin .btn-link:hover,
+.hb-admin .btn-link:focus,
+.hb-admin .btn-link:active {
+  border-color: transparent;
+}
+
+.hb-admin .btn-link:hover,
+.hb-admin .btn-link:focus {
+  color: #2a6496;
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+.hb-admin .btn-link[disabled]:hover,
+.hb-admin fieldset[disabled] .btn-link:hover,
+.hb-admin .btn-link[disabled]:focus,
+.hb-admin fieldset[disabled] .btn-link:focus {
+  color: #999999;
+  text-decoration: none;
+}
+
+.hb-admin .btn-lg {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+}
+
+.hb-admin .btn-sm,
+.hb-admin .btn-xs {
+  padding: 8px 15px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.hb-admin .btn-xs {
+  padding: 8px 15px;
+}
+
+.hb-admin .btn-block {
+  display: inline-block;
+  width: auto;
+  padding: 20px;
+}
+
+.hb-admin .remove-group-alt-item,
+.hb-admin .remove-group-item {
+  padding: 2px 15px;
+  background: #FA415D;
+  border: 1px solid #FA415D;
+}
+
+.hb-admin input[type="submit"].btn-block,
+.hb-admin input[type="reset"].btn-block,
+.hb-admin input[type="button"].btn-block {
+  width: 100%;
+}
+
+.btn-group input[type="radio"] {
+  display:none;
+}
+
+.btn-group,
+.btn-group-vertical {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.btn-group > .btn,
+.btn-group-vertical > .btn {
+  position: relative;
+  float: left;
+}
+
+.btn-group > .btn:hover,
+.btn-group-vertical > .btn:hover,
+.btn-group > .btn:focus,
+.btn-group-vertical > .btn:focus,
+.btn-group > .btn:active,
+.btn-group-vertical > .btn:active,
+.btn-group > .btn.active,
+.btn-group-vertical > .btn.active {
+  z-index: 2;
+}
+
+.btn-group > .btn:focus,
+.btn-group-vertical > .btn:focus {
+  outline: none;
+}
+
+.btn-group .btn + .btn,
+.btn-group .btn + .btn-group,
+.btn-group .btn-group + .btn,
+.btn-group .btn-group + .btn-group {
+  margin-left: -1px;
+}
+
+.hb-admin .btn {
+  color: #000 !important;
+  text-decoration:none;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Element Styles
+|--------------------------------------------------------------------------
+*/ 
+
+.hb-admin .sc-settings,
+.hb-admin .sc-preview,
+.hb-admin .sc-clabel {
+    background: none repeat scroll 0 0 #333;
+    border: 2px solid #333;
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0;
+    padding: 20px;
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold
+}
+.chosen-container,
+select#hb-shortcodes {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 110% !important;
+    font-weight: bold;
+    width: 100% !important;
+}
+
+.hb-admin .sc-settings {
+  display:none;
+}
+
+.hb-admin .well {
+  min-height: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 2px solid #333;
+}
+
+.hb-admin .well-white {
+  min-height: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #FFF;
+  border: 1px solid #e3e3e3;
+}
+
+.hb-admin .hr {
+  border-bottom: 1px dashed #E4E4E4;
+  width: 100%;
+  clear:both;
+  margin-bottom: 20px;
+}
+
+.hb-admin .well-white .hr {
+  border: none;
+}
+
+.hb-admin .hr:last-child {
+    border: medium none !important;
+    margin-bottom: 0 !important;
+}
+
+.hb-option-value,
+.hb-option-field {
+  float:left;
+  margin-bottom:20px;
+}
+
+.hb-option-field {
+  width:30%;
+}
+
+.hb-option-value {
+  width:70%;
+}
+
+.hb-view-icon {
+  position:absolute;
+  right:12px;
+  top:12px;
+}
+
+.hb-preview-modal {
+  position:absolute;
+  display:none;
+  width:100%;
+  height:100%;
+  background:#FFFFFF;
+  z-index: 10;
+  top:0;
+  left:0;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Typography
+|--------------------------------------------------------------------------
+*/
+
+.hb-admin {
+  font-family: 'Oswald', sans-serif;
+  color: #222;
+  font-size:14px !important;
+  line-height:100%;
+}
+
+.hb-admin .description {
+  font-style: normal !important;
+  font-family: 'Molengo', sans-serif;
+  line-height: 1.5;
+  padding: 15px 0 0;
+  display: block;
+  color: #888;
+}
+
+.hb-admin p {
+  padding:0px;
+  margin:0px;
+  margin-bottom: 10px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Form Styles
+|--------------------------------------------------------------------------
+*/ 
+
+.hb-admin textarea, .hb-admin input, .hb-admin select{
+  margin:0px !important;
+}
+
+.hb-admin .form-control {
+  border-radius:0 !important;
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px;
+  font-size: 12px;
+  line-height: 1.428571429;
+  color: #555555;
+  vertical-align: middle;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+          transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.hb-admin .form-control:focus {
+  border-color: #66afe9;
+  outline: 0;
+}
+
+.hb-admin .form-control[disabled],
+.hb-admin .form-control[readonly],
+.hb-admin fieldset[disabled] .form-control {
+  cursor: not-allowed;
+  background-color: #eeeeee;
+}
+
+.hb-media-access input {
+  margin-bottom:10px !important;
+}
+
+.hb-admin textarea.form-control {
+  height: auto;
+}
+
+#sc-content textarea {
+  height:150px;
+}
+
+.hb-admin .hb-hidden-range-input {
+  display: none;
+}
+
+.hb-admin .hb-range-slider {
+  width:90%;
+}
+
+.hb-admin .hb-range-value {
+  float:right;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Code
+|--------------------------------------------------------------------------
+*/
+
+.hb-admin code,
+.hb-admin pre {
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+
+.hb-admin code {
+  padding: 20px;
+  color: #7C7C7C;
+  background: #f9f9f9;
+  border: 2px solid;
+  display:block;
+  font-size: 120%;
+  line-height: 2;
+}
+
+.hb-admin pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.428571429;
+  color: #333333;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #cccccc;
+}
+
+.hb-admin pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border: 0;
+}
+
+.hb-admin .pre-scrollable {
+  max-height: 340px;
+  overflow-y: scroll;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Shortcode Generator
+|--------------------------------------------------------------------------
+*/ 
+
+#TB_window {
+    position: absolute !important;
+}
+
+#shortcode-generator-dialog .sc-options {
+  display:none;
+}
+
+.hb-admin .wp-picker-inphb-wrap .form-control {
+  width:100px !important;
+  padding:2px;
+  margin-right:5px !important;
+  height:24px;
+  float:left !important;
+}
+.hb-admin .wp-picker-inphb-wrap .button {
+  height:24px;  
+}
+
+/*
+|--------------------------------------------------------------------------
+| Modal
+|--------------------------------------------------------------------------
+*/ 
+
+.hb-modal {
+    display: none;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index:10;
+}
+
+.hb-modal-box {
+  width:80%;
+  height: 80%;
+  display: block;
+  background:#FFF;
+  position:relative;
+  margin:auto;
+  top:10%;
+  background-clip: padding-box;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+  overflow:hidden;
+}
+
+.hb-modal-box .inner{
+  padding:20px;
+  background: #FFF !important;
+}
+
+.hb-modal-header .inner,
+.hb-modal-footer .inner {
+  height: 20px;
+  line-height: 20px;
+  background: #FFF !important;
+}
+
+.hb-modal-header {
+  border-bottom:1px solid #CCC;
+  background:#FAFAFA;
+}
+
+.hb-modal-header h2 {
+  margin: 0px;
+}
+
+.hb-modal-body {
+  position: absolute;
+  top: 62px;
+  overflow: auto;
+  bottom: 62px;
+  width: 100%;
+}
+
+.hb-modal-footer {
+    bottom: 0px;
+    position: absolute;
+  border-top: 1px solid #CCC;
+  width:100%;
+  background:#FAFAFA;
+}
+
+.close-hb-modal {
+  cursor:pointer;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Icons
+|--------------------------------------------------------------------------
+*/ 
+.hb-glyphicons {
+    list-style: none outside none;
+    margin-bottom: 20px;
+    overflow: hidden;
+    padding-bottom: 1px;
+    padding-left: 0;
+}
+
+.hb-glyphicons li {
+    float: left;
+    font-size: 12px;
+    height: 48px;
+    line-height: 48px;;
+    margin: 0 -1px -1px 0;
+    text-align: center;
+    width: 4%;
+  min-width: 48px;
+  cursor: pointer;
+  color: #222;
+}
+
+.hb-glyphicons .hb-glyphicon {
+    display: block;
+    font-size: 18px;
+    margin: 0 auto;
+}
+
+.hb-glyphicons li:hover {
+    color: #FFF;
+  background: #333;
+}
+
+.hb-admin a.wp-color-result {
+    height: 34px;
+    outline: 0;
+    margin: 0 5px 5px 0px;
+    top: 0px;
+    background: #F7F7F7;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    border: 1px solid #F1F1F1;
+    width: 83px;
+    padding-left: 34px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+.hb-admin a.wp-color-result.wp-picker-open {
+    width: 34px;
+    padding-left: 0;
+}
+
+.hb-admin a.wp-color-result:after {
+    line-height: 34px;
+    border-left-color: #F1F1F1;
+    border-radius: 0;
+    box-shadow: none;
+    background: #FFF;
+}
+
+.hb-admin .wp-picker-container .wp-picker-clear,
+.hb-admin .wp-picker-container input[type="text"].wp-color-picker {
+    float: left;
+    border-color: #CCC;
+    height: 36px !important;
+    line-height: 36px !important;
+    margin-top: 0px;
+    margin-right: 6px !important;
+    border-color: #F1F1F1;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}

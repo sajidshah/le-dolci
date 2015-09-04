@@ -1,0 +1,224 @@
+@import url(http://fonts.googleapis.com/css?family=Oswald);
+
+.grid-builder,
+.grid-builder:before,
+.grid-builder:after,
+.grid-builder *,
+.grid-builder *:before,
+.grid-builder *:after {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.grid-builder {
+    width: 100%;
+    background-color: #DFDFDF;
+    min-height: 60em;
+}
+
+.grid-handles:before,
+.grid-handles:after,
+.grid-builder:before,
+.grid-builder:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.grid-item {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+    overflow: hidden;
+    height: 0;
+    float: left;
+}
+
+.grid-item[data-width="1"] {
+    width: 10%;
+}
+
+.grid-item[data-width="2"] {
+    width: 20%;
+}
+
+.grid-item[data-width="3"] {
+    width: 30%;
+}
+
+.grid-item[data-width="4"] {
+    width: 40%;
+}
+
+.grid-item[data-width="5"] {
+    width: 50%;
+}
+
+.grid-item[data-width="6"] {
+    width: 60%;
+}
+
+.grid-item[data-width="7"] {
+    width: 70%;
+}
+
+.grid-item[data-width="8"] {
+    width: 80%;
+}
+
+.grid-item[data-width="9"] {
+    width: 90%;
+}
+
+.grid-item[data-width="10"] {
+    width: 100%;
+}
+
+.grid-item[data-height="1"] {
+    padding-top: 10%;
+}
+
+.grid-item[data-height="2"] {
+    padding-top: 20%;
+}
+
+.grid-item[data-height="3"] {
+    padding-top: 30%;
+}
+
+.grid-item[data-height="4"] {
+    padding-top: 40%;
+}
+
+.grid-item[data-height="5"] {
+    padding-top: 50%;
+}
+
+.grid-item[data-height="6"] {
+    padding-top: 60%;
+}
+
+.grid-item[data-height="7"] {
+    padding-top: 70%;
+}
+
+.grid-item[data-height="8"] {
+    padding-top: 80%;
+}
+
+.grid-item[data-height="9"] {
+    padding-top: 90%;
+}
+
+.grid-item[data-height="10"] {
+    padding-top: 100%;
+}
+
+.grid-item:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    bottom: 5px;
+    background: #FFFFFF;
+}
+
+.grid-btns {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    background: #D1D1D1;
+    line-height: 1;
+    padding: 7px;
+    text-align: right;
+}
+
+.grid-btns a {
+    display: inline-block;
+    margin: 0 0 0 4px;
+    text-decoration: none;
+    color: #111 !important;
+}
+
+.grid-btns a:hover {
+    text-decoration: underline;
+}
+
+#grid-settings-dialog {
+    background: #F1F1F1;
+}
+
+#grid-settings-dialog table,
+#grid-settings-dialog #hb-width,
+#grid-settings-dialog #hb-height,
+#grid-settings-dialog #hb-image {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#grid-settings-dialog table {
+    width: 100%;
+}
+
+#grid-settings-dialog input[type="text"],
+#grid-settings-dialog textarea,
+#grid-settings-dialog select {
+    padding: 4px 8px !important;
+    line-height: 2;
+    height: auto;
+    width: 100%;
+    font-size: 14px !important;
+    -webkit-border-color: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0) !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    margin: 2px 0 !important;
+}
+
+#grid-settings-dialog textarea {
+    resize: none;
+}
+
+#grid-settings-dialog select {
+    width: auto;
+    min-width: 280px;
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;   
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    background: #FFF url(../../assets/images/ot-select.png) no-repeat right center;
+    padding-right: 35px;
+}
+
+#grid-settings-dialog .option-tree-ui-button.button {
+    top: 19px;
+    
+}
+
+#grid-settings-dialog td {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+#grid-settings-dialog label {
+    display: block;
+    font-size: 90%;
+    text-transform: uppercase;
+    font-family: 'Oswald', sans-serif;
+}
+
+strong.grid-title {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    display: block;
+    font-size: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    font-family: 'Oswald', sans-serif;
+}
