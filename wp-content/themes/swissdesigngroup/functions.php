@@ -927,3 +927,174 @@ require get_template_directory()  . '/post-types/init.php';
 
 // Shortcodes
 require get_template_directory() . '/shortcodes/shortcode-functions.php';
+
+
+//SS WooCommerce product extensions
+/**
+ * Adds a box to the main column on the Post and Page edit screens.
+ */
+function ss_add_meta_box() {
+
+	$screens = array( 'product');
+
+	foreach ( $screens as $screen ) {
+
+		add_meta_box(
+			'ss_sectionid',
+			__( 'Email Recipe', 'ss_textdomain' ),
+			'ss_meta_box_callback',
+			$screen
+		);
+		
+		//add_meta_box("wysiwyg-editor-2", "Second Column", "second_column_box", $screen, "normal", "high");
+		
+	}
+}
+
+
+add_action( 'add_meta_boxes', 'ss_add_meta_box' );
+
+/**
+ * Prints the box content.
+ * 
+ * @param WP_Post $post The object for the current post/page.
+ */
+ function ss_getCurrentOrders(){
+ 	
+	$email = "syedsajidshah@live.com";
+	$args = array();
+	$users = get_users( $args );
+	$data=array();
+	
+	global $wpdb;
+	global $post;
+    
+	//get orders with current product
+	$query = "SELECT oim.order_item_id, oi.order_id, oi.order_item_name FROM `wp_woocommerce_order_itemmeta` as `oim`
+				join wp_woocommerce_order_items as `oi` on `oim`.`order_item_id` = oi.`order_item_id`
+				where oim.meta_value = ".$post->ID." AND oim.meta_key = '_product_id'" ;
+	
+		$orders = $wpdb->get_results(
+			$wpdb->prepare( $query, array())
+		);
+	$data = array();
+	foreach($orders as $key=>$order){
+		
+		$data[] = array(
+			  'order_id' 	=> $order->order_id
+			, 'item_name' 	=> $order->order_item_name
+			, 'email' => get_post_meta( $order->order_id, $key = '_billing_email', true)
+			, 'fname' => get_post_meta( $order->order_id, $key = '_billing_first_name', true)
+			, 'lname' => get_post_meta( $order->order_id, $key = '_billing_last_name', true) 
+		
+		);
+		
+		
+		
+	}
+	
+	return $data;
+	
+ }
+function ss_meta_box_callback( $post ) {
+
+	// Add a nonce field so we can check for it later.
+	wp_nonce_field( 'ss_save_meta_box_data', 'ss_meta_box_nonce' );
+
+	/*
+	 * Use get_post_meta() to retrieve an existing value
+	 * from the database and use the value for the form.
+	 */
+	
+	$value = get_post_meta( $post->ID, '_ss_send_recipe', true );
+	echo '<label for="ss_send_recipe">';
+	_e( 'Send Recipe Now? ', 'ssrecipe_textdomain' );
+	
+	$checked = ($value=="1") ? 'checked="checked"' : '';
+	
+	echo '<input type="checkbox" '.$checked. ' id="ss_send_recipe" name="_ss_send_recipe" value = "1" />';
+	echo '</label> ';
+		
+	$valueeee2=  get_post_meta($_GET['post'], '_ss_email_body' , true ) ;
+    wp_editor( htmlspecialchars_decode($valueeee2), 'mettaabox_ID_stylee', $settings = array('textarea_name'=>'MyInputNAME') );
+	
+	echo "<h3>Recepients list</h3>";
+	
+	$orders = ss_getCurrentOrders();
+	
+	echo "<ul>";
+		//for($i=1; $i<=10; $i++){
+		foreach($orders as $order){
+			
+			$email = $order['email']; 
+			echo "<li>$i. <label><input type='checkbox' checked='checked' value='$email' name='recepient[]'><strong>".$order['fname']." ".$order['lname'] . "</strong> (".$email.")</label></li>";
+			echo '<input type="hidden" name="recepient_name[]" value = "SS Shah">';
+			
+		}
+		
+	echo "</ul>";
+	
+	
+}
+
+/**
+ * When the post is saved, saves our custom data.
+ *
+ * @param int $post_id The ID of the post being saved.
+ */
+function ss_save_meta_box_data( $post_id ) {
+
+	/*
+	 * We need to verify this came from our screen and with proper authorization,
+	 * because the save_post action can be triggered at other times.
+	 */
+
+	// Check if our nonce is set.
+	if ( ! isset( $_POST['ss_meta_box_nonce'] ) ) {
+		return;
+	}
+
+	// Verify that the nonce is valid.
+	if ( ! wp_verify_nonce( $_POST['ss_meta_box_nonce'], 'ss_save_meta_box_data' ) ) {
+		return;
+	}
+
+	// If this is an autosave, our form has not been submitted, so we don't want to do anything.
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	// Check the user's permissions.
+	if ( isset( $_POST['post_type'] ) && 'page' == $_POST['post_type'] ) {
+
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+			return;
+		}
+
+	} else {
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+	}
+
+	/* OK, it's safe for us to process/save the data now. */
+	
+	echo "<pre>";
+	print_r($_POST['recepient']);
+	print_r($_POST['recepient_name']);
+	echo "</pre>";
+	die;
+	
+	if (!empty($_POST['MyInputNAME'])){
+	    $datta=htmlspecialchars($_POST['MyInputNAME']);
+	    update_post_meta($post_id, '_ss_email_body', $datta );
+    }
+	
+	if (!empty($_POST['_ss_send_recipe'])){
+	    $datta=htmlspecialchars($_POST['_ss_send_recipe']);
+	    update_post_meta($post_id, '_ss_send_recipe', $datta );
+    }
+	
+}
+add_action( 'save_post', 'ss_save_meta_box_data' );
