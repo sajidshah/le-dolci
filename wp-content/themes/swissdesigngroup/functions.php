@@ -968,13 +968,14 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 	global $wpdb;
 	global $post;
     
+	$meta_value = $post->ID; 
 	//get orders with current product
 	$query = "SELECT oim.order_item_id, oi.order_id, oi.order_item_name FROM `wp_woocommerce_order_itemmeta` as `oim`
 				join wp_woocommerce_order_items as `oi` on `oim`.`order_item_id` = oi.`order_item_id`
-				where oim.meta_value = ".$post->ID." AND oim.meta_key = '_product_id'" ;
+				where oim.meta_value = %s AND oim.meta_key = '_product_id'" ;
 	
 		$orders = $wpdb->get_results(
-			$wpdb->prepare( $query, array())
+			$wpdb->prepare( $query, $meta_value)
 		);
 	$data = array();
 	foreach($orders as $key=>$order){
@@ -999,16 +1000,36 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 	
 	$orders = ss_getCurrentOrders();
 	
-	echo "<ul>";
-		//for($i=1; $i<=10; $i++){
+	if(is_array($orders) && !empty($orders)){
+	
+		echo "<table class='wp-list-table widefat fixed striped pages'>
+				<thead>
+					<tr>
+						<td><strong>#</strong></td>
+						<td><strong>Order</strong></td>
+						<td><strong>First name</strong></td>
+						<td><strong>Last Name</strong></td>
+						<td><strong>Email</strong></td>
+					</tr>
+				</thead>
+				<tbody>
+				";
+		
+		$i=1;
 		foreach($orders as $order){
-			
+		
 			$email = $order['email']; 
-			echo "<li>$i. <a target='_blank' href='post.php?post=".$order['order_id']."&action=edit'>Order: ".$order['order_id']."</a> - <strong>".$order['fname']." ".$order['lname'] . "</strong> (".$email.")</li>";
-			
+			echo "<tr><td>$i. </td><td><a target='_blank' href='post.php?post=".$order['order_id']."&action=edit'>Order: ".$order['order_id']."</a> </td><td>".$order['fname']."</td><td> ".$order['lname'] . "</td><td> ".$email."</td></tr>";
+			$i++;	
 		}
 		
-	echo "</ul>";
+		echo "</tbody></table>";
+		
+	}
+	else{
+		echo "<p>No orders found</p>";
+	}
+	
 	
 	
 }
@@ -1037,30 +1058,33 @@ function ss_meta_box_callback( $post ) {
 	$valueeee2=  get_post_meta($_GET['post'], '_ss_email_body' , true ) ;
     wp_editor( htmlspecialchars_decode($valueeee2), 'mettaabox_ID_stylee', $settings = array('textarea_name'=>'MyInputNAME') );
 	
-	echo "<h3>Recepients list</h3>";
-	
 	$orders = ss_getCurrentOrders();
-	echo "<input type='hidden' name='ss_item_name' value='".$orders[0]['item_name']."'>";
-	echo "<ul>";
+	if(is_array($orders) && !empty($orders)){
 		
-		foreach($orders as $order){
-			
-			$email = $order['email']; 
-			echo "<li>$i. <label><input type='checkbox' checked='checked' value='$email -<>- ".$order['fname'].' '. $order['lname']."' name='recepient[]'><strong>".$order['fname']." ".$order['lname'] . "</strong> (".$email.")</label></li>";
-			
-		}
+		echo "<input type='hidden' name='ss_item_name' value='".$orders[0]['item_name']."'>";
+		echo "<h3>Recepients list</h3>";
+		echo "<ul>";
 		
-	echo "</ul>";
-	
-	echo "<h3>Following Recipes are already sent</h3>";
+			$i=1; 
+			foreach($orders as $order){
+				
+				$email = $order['email']; 
+				echo "<li>$i. <label><input type='checkbox' checked='checked' value='$email -<>- ".$order['fname'].' '. $order['lname']."' name='recepient[]'><strong>".$order['fname']." ".$order['lname'] . "</strong> (".$email.")</label></li>";
+				$i++;
+			}
+			
+		echo "</ul>";
+		
+	}
 	
 	$recipe_log = get_post_meta($_GET['post'], '_ss_recipe_log' , true);
 	if($recipe_log != ''){
-			
+		
 		$recipe_log= maybe_unserialize(base64_decode($recipe_log));
 		
 		if(!empty($recipe_log)){
 			
+			echo "<h3>Following Recipes are already sent</h3>";
 			echo "<table class='wp-list-table widefat fixed striped pages'>
 				<thead>
 					<tr>
@@ -1160,12 +1184,12 @@ function ss_save_meta_box_data( $post_id ) {
 	    $datta=esc_html(wpautop($_POST['MyInputNAME'])); //htmlspecialchars 
 		
 		//if checkbox true
-		if($_POST['_ss_send_recipe']){
+		if(isset($_POST['_ss_send_recipe']) && ($_POST['_ss_send_recipe'])){
 			
 			$data=array();
 			$data['emailBody'] = $datta;//($_POST['MyInputNAME']); die;
-			$data['recepients'] = $_POST['recepient'];
-			$data['event'] = $_POST['ss_item_name'];
+			$data['recepients'] = isset($_POST['recepient']) ? $_POST['recepient'] : array() ;
+			$data['event'] = isset($_POST['ss_item_name']) ? $_POST['ss_item_name'] : '';
 			$data['subject'] = $_POST['ss_recipe_subject'];
 			
 			
@@ -1218,12 +1242,12 @@ function ss_send_recipe($data){
 		//echo "<pre>"; print_r($email_log); die;
 		
 		foreach($data['recepients'] as $recepient){
+				
+			$recep = explode('-<>-', $recepient);
 			
 			$subj = str_replace("{NAME}", trim($recep[1]), $data['subject']);
 			$subj = str_replace("{EVENT}", $data['event'], $subj);
 		
-			
-			$recep = explode('-<>-', $recepient);
 			
 			$body = htmlspecialchars_decode($data['emailBody']);
 			$body = str_replace("{NAME}", trim($recep[1]), $body);
