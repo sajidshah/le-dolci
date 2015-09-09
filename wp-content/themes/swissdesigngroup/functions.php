@@ -1393,13 +1393,16 @@ function ss_send_recipe($data){
 			update_post_meta( $productId, '_ss_reminderLog', maybe_serialize($log));
 	
 		}
-		
-//		print_r($products);
+		die;
 		
 		
 	}
 	
  }
+
+if(isset($_GET['trigger_cronjob']) && $_GET['trigger_cronjob']=='triggermyawsomecronjob'){
+	ss_orders_reminders();
+}
 
 function _ss_send_mail($data){
 
