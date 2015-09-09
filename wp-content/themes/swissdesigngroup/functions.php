@@ -959,7 +959,7 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
  * 
  * @param WP_Post $post The object for the current post/page.
  */
- function ss_getCurrentOrders(){
+ function ss_getCurrentOrders($post_id=null){
  	
 	$args = array();
 	$users = get_users( $args );
@@ -968,17 +968,24 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 	global $wpdb;
 	global $post;
     
-	$meta_value = $post->ID; 
+	
+	$meta_value = ($post_id) ? $post_id :  $post->ID; 
 	//get orders with current product
 	$query = "SELECT oim.order_item_id, oi.order_id, oi.order_item_name FROM `wp_woocommerce_order_itemmeta` as `oim`
 				join wp_woocommerce_order_items as `oi` on `oim`.`order_item_id` = oi.`order_item_id`
-				where oim.meta_value = %s AND oim.meta_key = '_product_id'" ;
+				where oim.meta_value = %d AND oim.meta_key = '_product_id'" ;
 	
 		$orders = $wpdb->get_results(
 			$wpdb->prepare( $query, $meta_value)
 		);
 	$data = array();
+
 	foreach($orders as $key=>$order){
+
+		//check if order status is acceptable.. if not continue...
+		$order_status = get_post_status($order->order_id);
+		$rejected_status = array('wc-cancelled','wc-refunded','wc-failed');
+		if(in_array($order_status, $rejected_status)) continue; 
 		
 		$data[] = array(
 			  'order_id' 	=> $order->order_id
@@ -1000,6 +1007,12 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 	
 	$orders = ss_getCurrentOrders();
 	
+	//get reminder details here....
+	$prodLog = get_post_meta($post->ID, '_ss_reminderLog', true);
+	if(!$prodLog) $prodLog = array(); //if no record found or if NULL/False make it empty array to make life easy...
+	else $prodLog = maybe_unserialize($prodLog);
+
+
 	if(is_array($orders) && !empty($orders)){
 	
 		echo "<table class='wp-list-table widefat fixed striped pages'>
@@ -1010,6 +1023,7 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 						<td><strong>First name</strong></td>
 						<td><strong>Last Name</strong></td>
 						<td><strong>Email</strong></td>
+						<td><strong>Reminder Status</strong></td>
 					</tr>
 				</thead>
 				<tbody>
@@ -1019,7 +1033,17 @@ add_action( 'add_meta_boxes', 'ss_add_meta_box' );
 		foreach($orders as $order){
 		
 			$email = $order['email']; 
-			echo "<tr><td>$i. </td><td><a target='_blank' href='post.php?post=".$order['order_id']."&action=edit'>Order: ".$order['order_id']."</a> </td><td>".$order['fname']."</td><td> ".$order['lname'] . "</td><td> ".$email."</td></tr>";
+			$reminderStatus = (key_exists($order['order_id'], $prodLog)) ? '<i class="dashicons-before dashicons-yes"></i> Sent' : '<i class="dashicons-before dashicons-no"></i> Not Sent'; 
+
+			echo "<tr>
+					<td>$i. </td>
+					<td><a target='_blank' href='post.php?post=".$order['order_id']."&action=edit'>Order: ".$order['order_id']."</a> </td>
+					<td>".$order['fname']."</td>
+					<td> ".$order['lname'] . "</td>
+					<td> ".$email."</td>
+					<td> ".$reminderStatus." </td>
+				</tr>
+				";
 			$i++;	
 		}
 		
@@ -1238,25 +1262,32 @@ function ss_send_recipe($data){
 		$email_log['body']= ($data['emailBody']);
 		$email_log['recepients'] = array();
 		$email_log['timestamp'] = current_time('timestamp');
-		
-		//echo "<pre>"; print_r($email_log); die;
-		
+
+		//email header....
+		$fromEmail = get_field('sender_email', 'option');
+		$fromName =  get_field('sender_name', 'option');
+
+		$headers = array();
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+
+		if(($fromEmail != "") && ($fromName != "")) {
+			$headers[] ='From: '.$fromName.' <'.$fromEmail.'>';
+		}
+
 		foreach($data['recepients'] as $recepient){
 				
 			$recep = explode('-<>-', $recepient);
+
+			$mailData=array();
+			$mailData['subject']= $data['subject'];
+			$mailData['body'] 	= $data['emailBody'];
+			$mailData['to']		= trim($recep[0]);
+			$mailData['name']	= trim($recep[1]);
+			$mailData['event']	= $data['event'];
+			$mailData['headers']	= $headers;
 			
-			$subj = str_replace("{NAME}", trim($recep[1]), $data['subject']);
-			$subj = str_replace("{EVENT}", $data['event'], $subj);
-		
-			
-			$body = htmlspecialchars_decode($data['emailBody']);
-			$body = str_replace("{NAME}", trim($recep[1]), $body);
-			$body = str_replace("{EVENT}", $data['event'], $body);
-			
-			$headers = array('Content-Type: text/html; charset=UTF-8');
-			$success = false; 
-			$success = wp_mail( trim($recep[0]), $subj, $body, $headers );
-			
+
+			$success = _ss_send_mail($mailData);
 			if($success){
 				
 				$email_log['recepients'][] = array(
@@ -1274,5 +1305,126 @@ function ss_send_recipe($data){
 		return $email_log; 
 	}
 	return false;
-	
 }
+
+/* **** Plan of action ****
+ * 1. Create a function
+ * 		fetch all orders which are active...
+ * 		calculate timestamp, if it's less than 7 days, 
+ * 2. trigger email function for all recepients...
+ * 3. create log, record of reminder sent to each recepient, show it on product edit page...
+ * 4. Ability to resend reminder to one or more recepients...
+ * 5. Send reminder manually too...
+ * 
+ */
+//ss_orders_reminders();
+ function ss_orders_reminders(){
+
+	$today	= date('Y-m-d');
+	$target = date('Y-m-d', strtotime("+7 day"));
+	
+	global $wpdb;
+	$query = "	SELECT * FROM `wp_postmeta` where meta_key = '_class_date' 
+				and meta_value >= %s
+				and meta_value <= %s" ;
+	
+		$products = $wpdb->get_results(
+			$wpdb->prepare( $query, $today, $target)
+		);
+	
+	//$products, they qualify for reminders...
+	if(!empty($products)){
+		
+		//set few variables for email so we don't call it under the loop
+		$body = get_field('email_message', 'option');
+		$subject = get_field('email_subject', 'option');
+
+		$fromEmail = get_field('sender_email', 'option');
+		$fromName =  get_field('sender_name', 'option');
+
+		$headers = array();
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+
+		if(($fromEmail != "") && ($fromName != "")) {
+			$headers[] ='From: '.$fromName.' <'.$fromEmail.'>';
+		}
+
+
+		foreach($products as $prod){
+			
+			//$orderRecepients order recepients...
+			$orderRecepients = ss_getCurrentOrders($prod->post_id);
+			
+			//get product previous log....
+			$prodLog = get_post_meta($prod->post_id, '_ss_reminderLog', true);
+			$productId = $prod->post_id; 
+
+			if(!$prodLog) $prodLog = array(); //if no record found or if NULL/False make it empty array to make life easy...
+			else $prodLog = maybe_unserialize($prodLog);
+
+				$log = array();
+				foreach($orderRecepients as $recepient){
+					
+					if(!empty($prodLog) && array_key_exists($recepient['order_id'], $prodLog) ){
+						
+						//reminder already sent to this order.. ignore it...
+						$log[$recepient['order_id']] = $recepient;
+						continue; 
+
+					}
+					else{
+
+						//name, event, body, subject, to
+						$mailData = array();
+						$mailData['name'] 	= $recepient['fname'].' '.$recepient['lname'];
+						$mailData['event']	=$recepient['item_name'];
+						$mailData['subject']= $subject;
+						$mailData['body'] 	= $body;
+						$mailData['to'] 	= $recepient['email'];
+						$mailData['headers']= $headers;
+
+						if(_ss_send_mail($mailData)){
+							$log[$recepient['order_id']] = $recepient;
+						}
+					} 
+			}
+
+			//update product reminderLog...
+			update_post_meta( $productId, '_ss_reminderLog', maybe_serialize($log));
+	
+		}
+		
+//		print_r($products);
+		
+		
+	}
+	
+ }
+
+function _ss_send_mail($data){
+
+	/* data should have follwoing variables
+		name, event, body, subject, to */
+
+	$subj = str_replace("{NAME}", $data['name'], $data['subject']);
+	$subj = str_replace("{EVENT}", $data['event'], $subj);
+
+	
+	$body = htmlspecialchars_decode($data['body']);
+	$body = str_replace("{NAME}", $data['name'], $body);
+	$body = str_replace("{EVENT}", $data['event'], $body);
+	
+	$headers = $data['headers'];
+
+	$success = false; 
+
+	//$data['to'].'<br>'. $subj.'<br>'.$body.'<br>';
+	//print_r($headers);
+	
+	//if we have 'to' defined... send out the email...
+	if(trim($data['to']) != "")	$success = wp_mail( trim($data['to']), $subj, $body, $headers );
+	return $success;
+}
+
+//acf plugin add options page...
+require_once('inc/acf.php');
