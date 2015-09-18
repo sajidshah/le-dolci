@@ -524,8 +524,9 @@ function SDG_scripts() {
 	wp_enqueue_style( 'SDG-ie7', get_template_directory_uri() . '/css/ie7.css', array( 'SDG-style' ), '20141010' );
 	wp_style_add_data( 'SDG-ie7', 'conditional', 'lt IE 8' );
 
-	//wp_enqueue_script( 'SDG-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20141010', true );
-
+	if ( ! wp_script_is('jquery-cookie') ) {
+		wp_enqueue_script( 'jquery-cookie', get_template_directory_uri() . '/js/jquery.cookie.min.js', array(), '1.4.1', true );
+	}
 
 	if ( is_singular() && wp_attachment_is_image() ) {
 		wp_enqueue_script( 'SDG-keyboard-image-navigation', get_template_directory_uri() . '/js/keyboard-image-navigation.js', array( 'jquery' ), '20141010' );
@@ -759,28 +760,37 @@ function hb_banner_slider_action() {
 	    while ( $loop->have_posts() ) : $loop->the_post();
 
 	    	echo '<div class="item">';
-	    		echo '<div class="circles-wrapper visible-lg-block">';
-	    			echo '<div class="container">';
-	    				echo '<span class="circles"></span>';
-	    			echo '</div>';
-	    		echo '</div>';
+				if ( has_post_thumbnail() ){
+				$img = wp_get_attachment_image_src(get_post_thumbnail_id(), 'full');
+				echo '<div class="slide-image" style="background-image: url('.esc_url(current($img)).')">';
+					the_post_thumbnail('full', array('class'=>'slide-img says'));
+				echo '</div>';	
+				}
+
+				if ( $overlay_color = sanitize_hex_color(get_post_meta(get_the_ID(), 'overlay_color', true)) ){
+				$overlay_opacity = get_post_meta(get_the_ID(), 'overlay_opacity', true) / 100;
+				echo sprintf('<div class="slide-overlay" style="background:%s;%s;"></div>',
+						esc_attr($overlay_color),
+						$overlay_opacity ? 'opacity:'.esc_attr($overlay_opacity) : ''
+					);
+				}
+
+	    		// echo '<div class="circles-wrapper visible-lg-block">';
+	    		// 	echo '<div class="container">';
+	    		// 		echo '<span class="circles"></span>';
+	    		// 	echo '</div>';
+	    		// echo '</div>';
+
 	    		echo '<div class="vertical-align">';
 	    			echo '<div class="vertical-box">';
 	    				echo '<div class="container">';
 	    					echo '<div class="tabel">';
 	    						echo '<div class="cell">';
 	    							echo '<div class="slide-content">';
-						    			the_title('<h1>', '</h1>');
+						    			the_title('<h1 style="color:'.sanitize_hex_color(get_post_meta(get_the_ID(), 'title_color', true)).';">', '</h1>');
 						    			the_content();
 						    		echo '</div>';
 			    				echo '</div>';
-	    						if ( has_post_thumbnail() ){
-			    				echo '<div class="cell hidden-xs text-right">';
-			    					echo '<div class="slide-image">';
-			    						the_post_thumbnail('full', array('class'=>'slide-img'));
-			    					echo '</div>';	
-			    				echo '</div>';
-	    						}
 			    			echo '</div>';
 			    		echo '</div>';
 			    	echo '</div>';
@@ -818,12 +828,20 @@ function hb_site_banner_inline_styles() {
 
 	$css = '';
 
+	if ( ot_get_option('promo') ){
+
+		$css .= '#promo {';
+    		$css .= 'color:'.sanitize_hex_color(ot_get_option('promo_color')).';';
+    		$css .= 'background:'.sanitize_hex_color(ot_get_option('promo_bg')).';';
+		$css .= '}';
+	}
+
 	if ( ( (is_single() && 'post' == get_post_type()) || is_page() ) && has_post_thumbnail( get_the_ID() ) ){
 
 		$thumb = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'full' );
 
 		$css .= '#hb-banner-img{';
-			$css .= 'background-image:url(' . esc_url($thumb[0]) . ')';
+			$css .= 'background-image:url(' . esc_url(current($thumb)) . ')';
 		$css .= '}';
 	}
 
@@ -861,18 +879,7 @@ function hb_shortcode_active_option_values(){
  **/
 function hb_theme_body_class_filter( $classes ){
 
-
-	if ( is_page() && is_page_template('page-landing.php') ){
-
-		$count_slides 		= wp_count_posts('slide');
-		$published_slides 	= $count_slides->publish;
-
-		$classes[] = ( $published_slides )? 'page-no-banner' : 'page-has-banner';
-
-	} else {
-
-		$classes[] = ( ! apply_filters('hb_page_has_banner', true ))? 'page-no-banner' : 'page-has-banner';
-	}
+	$classes[] = ( ! apply_filters('hb_page_has_banner', true ))? 'page-no-banner' : 'page-has-banner';
 
 	return $classes;
 }
@@ -929,505 +936,23 @@ require get_template_directory()  . '/post-types/init.php';
 require get_template_directory() . '/shortcodes/shortcode-functions.php';
 
 
-//SS WooCommerce product extensions
-/**
- * Adds a box to the main column on the Post and Page edit screens.
- */
-function ss_add_meta_box() {
 
-	add_meta_box(
-		'ss_sectionid',
-		__( 'Email Recipe', 'ss_textdomain' ),
-		'ss_meta_box_callback',
-		'product'
-	);
-	
-	add_meta_box(
-		'ss_attendee_id',
-		__( 'Attendee', 'ss_textdomain' ),
-		'ss_meta_box_attendee_callback',
-		'product'
-	);
-	
+if(!function_exists('sanitize_hex_color')){
+	function sanitize_hex_color( $color ) {
+	    if ( '' === $color )
+	        return '';
+	 
+	    // 3 or 6 hex digits, or the empty string.
+	    if ( preg_match('|^#([A-Fa-f0-9]{3}){1,2}$|', $color ) )
+	        return $color;
+	}
 }
 
+function hb_site_promo(){
 
-add_action( 'add_meta_boxes', 'ss_add_meta_box' );
-
-/**
- * Prints the box content.
- * 
- * @param WP_Post $post The object for the current post/page.
- */
- function ss_getCurrentOrders($post_id=null){
- 	
-	$args = array();
-	$users = get_users( $args );
-	$data=array();
-	
-	global $wpdb;
-	global $post;
-    
-	
-	$meta_value = ($post_id) ? $post_id :  $post->ID; 
-	//get orders with current product
-	$query = "SELECT oim.order_item_id, oi.order_id, oi.order_item_name FROM `wp_woocommerce_order_itemmeta` as `oim`
-				join wp_woocommerce_order_items as `oi` on `oim`.`order_item_id` = oi.`order_item_id`
-				where oim.meta_value = %d AND oim.meta_key = '_product_id'" ;
-	
-		$orders = $wpdb->get_results(
-			$wpdb->prepare( $query, $meta_value)
-		);
-	$data = array();
-
-	foreach($orders as $key=>$order){
-
-		//check if order status is acceptable.. if not continue...
-		$order_status = get_post_status($order->order_id);
-		$rejected_status = array('wc-cancelled','wc-refunded','wc-failed');
-		if(in_array($order_status, $rejected_status)) continue; 
-		
-		$data[] = array(
-			  'order_id' 	=> $order->order_id
-			, 'item_name' 	=> $order->order_item_name
-			, 'email' => get_post_meta( $order->order_id, $key = '_billing_email', true)
-			, 'fname' => get_post_meta( $order->order_id, $key = '_billing_first_name', true)
-			, 'lname' => get_post_meta( $order->order_id, $key = '_billing_last_name', true) 
-		
-		);
-		
-		
-		
-	}
-	
-	return $data;
-	
- }
- function ss_meta_box_attendee_callback( $post ) {
-	
-	$orders = ss_getCurrentOrders();
-	
-	//get reminder details here....
-	$prodLog = get_post_meta($post->ID, '_ss_reminderLog', true);
-	if(!$prodLog) $prodLog = array(); //if no record found or if NULL/False make it empty array to make life easy...
-	else $prodLog = maybe_unserialize($prodLog);
-
-
-	if(is_array($orders) && !empty($orders)){
-	
-		echo "<table class='wp-list-table widefat fixed striped pages'>
-				<thead>
-					<tr>
-						<td><strong>#</strong></td>
-						<td><strong>Order</strong></td>
-						<td><strong>First name</strong></td>
-						<td><strong>Last Name</strong></td>
-						<td><strong>Email</strong></td>
-						<td><strong>Reminder Status</strong></td>
-					</tr>
-				</thead>
-				<tbody>
-				";
-		
-		$i=1;
-		foreach($orders as $order){
-		
-			$email = $order['email']; 
-			$reminderStatus = (key_exists($order['order_id'], $prodLog)) ? '<i class="dashicons-before dashicons-yes"></i> Sent' : '<i class="dashicons-before dashicons-no"></i> Not Sent'; 
-
-			echo "<tr>
-					<td>$i. </td>
-					<td><a target='_blank' href='post.php?post=".$order['order_id']."&action=edit'>Order: ".$order['order_id']."</a> </td>
-					<td>".$order['fname']."</td>
-					<td> ".$order['lname'] . "</td>
-					<td> ".$email."</td>
-					<td> ".$reminderStatus." </td>
-				</tr>
-				";
-			$i++;	
-		}
-		
-		echo "</tbody></table>";
-		
-	}
-	else{
-		echo "<p>No orders found</p>";
-	}
-	
-	
-	
+	get_template_part( 'content', 'promo' );
 }
-function ss_meta_box_callback( $post ) {
-
-	// Add a nonce field so we can check for it later.
-	wp_nonce_field( 'ss_save_meta_box_data', 'ss_meta_box_nonce' );
-
-	/*
-	 * Use get_post_meta() to retrieve an existing value
-	 * from the database and use the value for the form.
-	 */
-	
-	$value = get_post_meta( $post->ID, '_ss_send_recipe', true );
-	echo '<p class="form-field"><label for="ss_send_recipe">';
-	
-	$checked = ($value=="1") ? 'checked="checked"' : '';
-	echo '<input type="checkbox" '.$checked. ' id="ss_send_recipe" name="_ss_send_recipe" value = "1" />';
-	echo ' Send Recipe Now?</label></p>';
-	
-	$subj = get_post_meta($_GET['post'], '_ss_recipe_subject' , true );
-	$subj = (trim($subj) != "") ? $subj :'{NAME}, Your Recipe';
-	
-	echo '<p class="form-field"><label>Email Subject <input type="text" name="ss_recipe_subject" value="'.$subj.'"></label></p>';
-		
-	$valueeee2=  get_post_meta($_GET['post'], '_ss_email_body' , true ) ;
-    wp_editor( htmlspecialchars_decode($valueeee2), 'mettaabox_ID_stylee', $settings = array('textarea_name'=>'MyInputNAME') );
-	
-	$orders = ss_getCurrentOrders();
-	if(is_array($orders) && !empty($orders)){
-		
-		echo "<input type='hidden' name='ss_item_name' value='".$orders[0]['item_name']."'>";
-		echo "<h3>Recepients list</h3>";
-		echo "<ul>";
-		
-			$i=1; 
-			foreach($orders as $order){
-				
-				$email = $order['email']; 
-				echo "<li>$i. <label><input type='checkbox' checked='checked' value='$email -<>- ".$order['fname'].' '. $order['lname']."' name='recepient[]'><strong>".$order['fname']." ".$order['lname'] . "</strong> (".$email.")</label></li>";
-				$i++;
-			}
-			
-		echo "</ul>";
-		
-	}
-	
-	$recipe_log = get_post_meta($_GET['post'], '_ss_recipe_log' , true);
-	if($recipe_log != ''){
-		
-		$recipe_log= maybe_unserialize(base64_decode($recipe_log));
-		
-		if(!empty($recipe_log)){
-			
-			echo "<h3>Following Recipes are already sent</h3>";
-			echo "<table class='wp-list-table widefat fixed striped pages'>
-				<thead>
-					<tr>
-						<td><strong>Date Time</strong></td>
-						<td><strong>Subject</strong></td>
-						<td><strong>Message</strong></td>
-						<td><strong>Recepients</strong></td>
-					</tr>
-				</thead>
-				<tbody>
-				";
-				foreach($recipe_log as $row){
-					
-					echo "
-							<tr>
-								<td>". date('m/d/Y h:i A', $row['timestamp']) ."</td>
-								<td>".$row['subject']."</td>
-								<td><span class='collapse'>".htmlspecialchars_decode($row['body'])."</span></td>
-								<td>";
-								
-									echo "<table class='wp-list-table '>	
-											<thead>
-												<tr>
-													<td><strong>Name</strong></td>
-													<td><strong>Email</strong></td>
-													<td><strong>Date/Time</strong></td>
-												</tr>
-											</thead>";
-											foreach($row['recepients'] as $val){
-														
-												echo "<tbody>
-														<tr>
-															<td>".$val['name']."</td>
-															<td>".$val['email']."</td>
-															<td>".date('m/d/y h:i A', $val['timestamp'])."</td>
-														</tr>
-													</tbody>";		
-												
-											}
-									echo "</table>";
-								echo "</td>
-							</tr>
-						";
-					
-				}
-			echo "</tbody></table>";
-		}
-	}
-	
-	
-}
-
-/**
- * When the post is saved, saves our custom data.
- *
- * @param int $post_id The ID of the post being saved.
- */
-function ss_save_meta_box_data( $post_id ) {
-
-	/*
-	 * We need to verify this came from our screen and with proper authorization,
-	 * because the save_post action can be triggered at other times.
-	 */
-
-	// Check if our nonce is set.
-	if ( ! isset( $_POST['ss_meta_box_nonce'] ) ) {
-		return;
-	}
-
-	// Verify that the nonce is valid.
-	if ( ! wp_verify_nonce( $_POST['ss_meta_box_nonce'], 'ss_save_meta_box_data' ) ) {
-		return;
-	}
-
-	// If this is an autosave, our form has not been submitted, so we don't want to do anything.
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return;
-	}
-
-	// Check the user's permissions.
-	if ( isset( $_POST['post_type'] ) && 'page' == $_POST['post_type'] ) {
-
-		if ( ! current_user_can( 'edit_page', $post_id ) ) {
-			return;
-		}
-
-	} else {
-
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
-		}
-	}
-
-	/* OK, it's safe for us to process/save the data now. */
-	
-	if (!empty($_POST['MyInputNAME'])){
-	    $datta=esc_html(wpautop($_POST['MyInputNAME'])); //htmlspecialchars 
-		
-		//if checkbox true
-		if(isset($_POST['_ss_send_recipe']) && ($_POST['_ss_send_recipe'])){
-			
-			$data=array();
-			$data['emailBody'] = $datta;//($_POST['MyInputNAME']); die;
-			$data['recepients'] = isset($_POST['recepient']) ? $_POST['recepient'] : array() ;
-			$data['event'] = isset($_POST['ss_item_name']) ? $_POST['ss_item_name'] : '';
-			$data['subject'] = $_POST['ss_recipe_subject'];
-			
-			
-			//process emails and get log...
-			$email_log = ss_send_recipe($data);
-			
-			if($email_log){
-				
-				 
-				$log =array();
-				$current_log = get_post_meta($post_id, '_ss_recipe_log' , true); //current data of log...
-				
-				if($current_log == ""){
-					$log[] = $email_log; //first time sending recipe...
-				}
-				else{
-					
-					$current_log = maybe_unserialize(base64_decode($current_log));
-					$log=$current_log;
-					$log[] = $email_log; 
-				}
-				
-				$serialize = base64_encode(maybe_serialize($log));
-				update_post_meta($post_id, '_ss_recipe_log' , $serialize);
-				
-			}
-			
-		}
-		
-	    update_post_meta($post_id, '_ss_email_body', $datta );
-		update_post_meta($post_id, '_ss_recipe_subject', esc_attr($_POST['ss_recipe_subject']));
-		
-		
-    }
-	
-}
-add_action( 'save_post', 'ss_save_meta_box_data' );
-
-function ss_send_recipe($data){
-	
-	$recep_array = array();
-	if($data['recepients'] && $data['recepients']!='' && !empty($data['recepients'])){
-		
-		$email_log = array();
-		$email_log['subject']=$data['subject'];
-		$email_log['body']= ($data['emailBody']);
-		$email_log['recepients'] = array();
-		$email_log['timestamp'] = current_time('timestamp');
-
-		//email header....
-		$fromEmail = get_field('sender_email', 'option');
-		$fromName =  get_field('sender_name', 'option');
-
-		$headers = array();
-		$headers[] = 'Content-Type: text/html; charset=UTF-8';
-
-		if(($fromEmail != "") && ($fromName != "")) {
-			$headers[] ='From: '.$fromName.' <'.$fromEmail.'>';
-		}
-
-		foreach($data['recepients'] as $recepient){
-				
-			$recep = explode('-<>-', $recepient);
-
-			$mailData=array();
-			$mailData['subject']= $data['subject'];
-			$mailData['body'] 	= $data['emailBody'];
-			$mailData['to']		= trim($recep[0]);
-			$mailData['name']	= trim($recep[1]);
-			$mailData['event']	= $data['event'];
-			$mailData['headers']	= $headers;
-			
-
-			$success = _ss_send_mail($mailData);
-			if($success){
-				
-				$email_log['recepients'][] = array(
-				
-					  'name' => trim($recep[1])
-					, 'email'=>trim($recep[0])
-					, 'timestamp'=> current_time('timestamp')
-				
-				);
-				
-			}
-			
-		}
-
-		return $email_log; 
-	}
-	return false;
-}
-
-/* **** Plan of action ****
- * 1. Create a function
- * 		fetch all orders which are active...
- * 		calculate timestamp, if it's less than 7 days, 
- * 2. trigger email function for all recepients...
- * 3. create log, record of reminder sent to each recepient, show it on product edit page...
- * 4. Ability to resend reminder to one or more recepients...
- * 5. Send reminder manually too...
- * 
- */
-//ss_orders_reminders();
- function ss_orders_reminders(){
-
-	$today	= date('Y-m-d');
-	$target = date('Y-m-d', strtotime("+7 day"));
-	
-	global $wpdb;
-	$query = "	SELECT * FROM `wp_postmeta` where meta_key = '_class_date' 
-				and meta_value >= %s
-				and meta_value <= %s" ;
-	
-		$products = $wpdb->get_results(
-			$wpdb->prepare( $query, $today, $target)
-		);
-	
-	//$products, they qualify for reminders...
-	if(!empty($products)){
-		
-		//set few variables for email so we don't call it under the loop
-		$body = get_field('email_message', 'option');
-		$subject = get_field('email_subject', 'option');
-
-		$fromEmail = get_field('sender_email', 'option');
-		$fromName =  get_field('sender_name', 'option');
-
-		$headers = array();
-		$headers[] = 'Content-Type: text/html; charset=UTF-8';
-
-		if(($fromEmail != "") && ($fromName != "")) {
-			$headers[] ='From: '.$fromName.' <'.$fromEmail.'>';
-		}
-
-
-		foreach($products as $prod){
-			
-			//$orderRecepients order recepients...
-			$orderRecepients = ss_getCurrentOrders($prod->post_id);
-			
-			//get product previous log....
-			$prodLog = get_post_meta($prod->post_id, '_ss_reminderLog', true);
-			$productId = $prod->post_id; 
-
-			if(!$prodLog) $prodLog = array(); //if no record found or if NULL/False make it empty array to make life easy...
-			else $prodLog = maybe_unserialize($prodLog);
-
-				$log = array();
-				foreach($orderRecepients as $recepient){
-					
-					if(!empty($prodLog) && array_key_exists($recepient['order_id'], $prodLog) ){
-						
-						//reminder already sent to this order.. ignore it...
-						$log[$recepient['order_id']] = $recepient;
-						continue; 
-
-					}
-					else{
-
-						//name, event, body, subject, to
-						$mailData = array();
-						$mailData['name'] 	= $recepient['fname'].' '.$recepient['lname'];
-						$mailData['event']	=$recepient['item_name'];
-						$mailData['subject']= $subject;
-						$mailData['body'] 	= $body;
-						$mailData['to'] 	= $recepient['email'];
-						$mailData['headers']= $headers;
-
-						if(_ss_send_mail($mailData)){
-							$log[$recepient['order_id']] = $recepient;
-						}
-					} 
-			}
-
-			//update product reminderLog...
-			update_post_meta( $productId, '_ss_reminderLog', maybe_serialize($log));
-	
-		}
-		die;
-		
-		
-	}
-	
- }
-
-if(isset($_GET['trigger_cronjob']) && $_GET['trigger_cronjob']=='triggermyawsomecronjob'){
-	ss_orders_reminders();
-}
-
-function _ss_send_mail($data){
-
-	/* data should have follwoing variables
-		name, event, body, subject, to */
-
-	$subj = str_replace("{NAME}", $data['name'], $data['subject']);
-	$subj = str_replace("{EVENT}", $data['event'], $subj);
-
-	
-	$body = htmlspecialchars_decode($data['body']);
-	$body = str_replace("{NAME}", $data['name'], $body);
-	$body = str_replace("{EVENT}", $data['event'], $body);
-	
-	$headers = $data['headers'];
-
-	$success = false; 
-
-	//$data['to'].'<br>'. $subj.'<br>'.$body.'<br>';
-	//print_r($headers);
-	
-	//if we have 'to' defined... send out the email...
-	if(trim($data['to']) != "")	$success = wp_mail( trim($data['to']), $subj, $body, $headers );
-	return $success;
-}
+add_action('hb_before_page_content', 'hb_site_promo', 5);
 
 //acf plugin add options page...
 require_once('inc/acf.php');
